@@ -54,18 +54,16 @@ def test_compression_triggered():
     """Test that compression is triggered above threshold."""
     compressor = ContextCompressor(
         summarizer=mock_summarizer,
-        t_max=50,  # Very low threshold
+        t_max=50,
         t_retained=40,
         t_summary=10,
     )
     
-    # Add enough messages to trigger compression
     for i in range(20):
         compressor.add_message(f"Message number {i} with some content here", role="user")
     
     context = compressor.get_current_context()
     
-    # Should have compressed at least once
     assert compressor.state.compression_count > 0
 
 
@@ -78,11 +76,9 @@ def test_incremental_summary_update():
         t_summary=20,
     )
     
-    # Add messages to trigger multiple compressions
     for i in range(50):
         compressor.add_message(f"Message {i} " * 10, role="user")
     
-    # Check that summary contains "UPDATED" indicating incremental update
     if compressor.state.current_summary:
         assert "UPDATED" in compressor.state.current_summary.summary or "SUMMARY" in compressor.state.current_summary.summary
 
