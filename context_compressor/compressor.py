@@ -174,6 +174,11 @@ class ContextCompressor:
         
         summary = self.summarizer(messages_text, previous_summary)
         
+        summary_tokens = self.tokenizer.count_tokens(summary)
+
+        if summary_tokens > self.t_summary:
+            print(f"Warning: Summary is too long ({summary_tokens} tokens).")
+
         return summary
     
     def _format_messages_for_summary(self, messages: List[Message]) -> str:
