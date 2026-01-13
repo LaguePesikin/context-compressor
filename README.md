@@ -69,7 +69,7 @@ print(f"Tokens saved: {stats['total_tokens_saved']}")
 
 **Parameters:**
 
-- `summarizer`: Custom text summarization function that takes message text and optional previous summary, returns a new summary
+- `summarizer`: Custom text summarization function that takes message text and optional previous summary, returns a new summary. View `examples/basic_usage.llm_summarizer_example` for a fundamental implementation.
 - `t_max`: Maximum token threshold. Context compression is triggered when this limit is exceeded
 - `t_retained`: Expected token count to retain after compression. The ratio `t_retained/t_max` determines the compression rate
 - `t_summary`: Length of the context summary. This parameter takes effect through prompt engineering in your summarizer (if using LLM) and the `_compress` method

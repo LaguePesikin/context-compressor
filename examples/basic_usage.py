@@ -3,7 +3,7 @@ import requests
 import os
 import traceback
 
-def simple_summarizer(messages_text: str, previous_summary: str = None) -> str:
+def simple_summarizer_example(messages_text: str, previous_summary: str = None) -> str:
     """
     Simple summarizer example.
     In production sceneio please replace this with an actual LLM call.
@@ -14,9 +14,9 @@ def simple_summarizer(messages_text: str, previous_summary: str = None) -> str:
         return f"Summary: {messages_text[:100]}..."
 
 
-def main():
+def simple_summarizer_example_main():
     compressor = ContextCompressor(
-        summarizer=simple_summarizer,
+        summarizer=simple_summarizer_example,
         t_max=1000,      # Trigger compression at 1000 tokens
         t_retained=800,  # Keep 800 tokens after compression
         t_summary=200,   # Reserve 200 tokens for summary
@@ -47,16 +47,18 @@ def main():
         print(f"{key}: {value}")
 
 
-def llm_example_main():
+def llm_summarizer_example():
     """Example with actual LLM integration."""
+
+    T_SUMMARY = 150
 
     def llm_summarizer(messages_text: str, previous_summary: str = None) -> str:
         """Use LLM to create summaries."""
 
         if previous_summary:
-            prompt = f"""Previous summary:\n\n{previous_summary}\n\nNew messages to incorporate:\n\n{messages_text}\n\nCreate an updated summary that combines the previous summary with the new information."""
+            prompt = f"""Previous summary:\n\n{previous_summary}\n\nNew messages to incorporate:\n\n{messages_text}\n\nCreate an updated summary that combines the previous summary with the new information.\n\nIMPORTANT: Keep the summary under {T_SUMMARY} tokens. Be concise but include key points."""
         else:
-            prompt = f"""Summarize the following conversation:\n\n{messages_text}\n\nProvide a concise summary of the key points."""
+            prompt = f"""Summarize the following conversation:\n\n{messages_text}\n\nProvide a concise summary of the key points.\n\nIMPORTANT: Keep the summary under {T_SUMMARY} tokens. Be concise but include key points."""
         try:
             response = requests.post(
                 os.getenv("OPENAI_API_BASE") + "/v1/chat/completions",
@@ -82,7 +84,7 @@ def llm_example_main():
         summarizer=llm_summarizer,
         t_max=600,
         t_retained=400,
-        t_summary=150,
+        t_summary=T_SUMMARY,
     )
     
     test_conversation = [
@@ -156,6 +158,6 @@ def llm_example_main():
     
 
 if __name__ == "__main__":
-    main()
+    simple_summarizer_example_main()
     print("\n" + "="*50 + "\n")
-    llm_example_main()
+    llm_summarizer_example()
