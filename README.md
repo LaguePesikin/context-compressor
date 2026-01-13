@@ -73,7 +73,7 @@ print(f"Tokens saved: {stats['total_tokens_saved']}")
 - `t_max`: Maximum token threshold. Context compression is triggered when this limit is exceeded
 - `t_retained`: Expected token count to retain after compression. The ratio `t_retained/t_max` determines the compression rate
 - `t_summary`: Length of the context summary. This parameter takes effect through prompt engineering in your summarizer (if using LLM) and the `_compress` method
-
+- `tokenizer`: Custom Tokenizer (you can set`tiktoken` or `transformers.AutoTokenizer` here). See `context_compressor.tokenizer.TokenCounter` for more details.
 
 
 ## Citation
