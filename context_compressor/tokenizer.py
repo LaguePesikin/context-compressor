@@ -4,18 +4,57 @@ import tiktoken
 class TokenCounter:
     """Handle token counting for different models."""
     
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, use_transformers: bool = False):
+        """
+        Initialize the token counter.
+        
+        Args:
+            model_name: The name of the model to use for token counting
+            use_transformers: Whether to use the transformers library for token counting
+        """
         self.model = model_name
+        self.use_transformers = use_transformers
+        self.encoding = None
+        self.tokenizer = None
+        
+        if use_transformers:
+            self._init_transformers_tokenizer(model_name)
+        else:
+            self._init_tiktoken_encoding(model_name)
+
+    def _init_tiktoken_encoding(self, model_name: str):
+        """Initialize tiktoken encoding."""
         try:
             self.encoding = tiktoken.encoding_for_model(model_name)
         except KeyError:
+            print(f"Warning: Model '{model_name}' not recognized by tiktoken. Using cl100k_base encoding.")
             self.encoding = tiktoken.get_encoding("cl100k_base")
+    
+    def _init_transformers_tokenizer(self, model_name: str):
+        """Initialize transformers tokenizer."""
+        try:
+            from transformers import AutoTokenizer
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name,
+                trust_remote_code=True
+            )
+        except ImportError:
+            raise ImportError(
+                "transformers library is required when use_transformers=True. "
+                "Install it with: pip install transformers"
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to load tokenizer for '{model_name}': {e}")
 
     def count_tokens(self, text: str) -> int:
         if not text:
             return 0
+        if self.use_transformers:
+            return len(self.tokenizer.encode(text))
         else:
             return len(self.encoding.encode(text))
+
+
 
     def count_message_tokens(self, messages: List[dict]) -> int:
         tokens = 0
@@ -39,3 +78,11 @@ class SimpleTokenCounter:
     def count_message_tokens(self, messages: List[dict]) -> int:
         """Count tokens in messages."""
         return sum(self.count_tokens(m.get('content', '')) for m in messages)
+
+
+
+if __name__ == "__main__":
+    token_counter = TokenCounter("deepseek-ai/DeepSeek-V3.1", use_transformers=True)
+    text = "Beijing is a beautiful city, with a long history and rich culture."
+    print(token_counter.count_tokens(text))
+    print(tiktoken.encoding_for_model("deepseek-ai/DeepSeek-V3.1").encode(text))
