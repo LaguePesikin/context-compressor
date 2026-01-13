@@ -1,4 +1,4 @@
-from context_compressor import ContextCompressor
+from context_compressor import ContextCompressor, TokenCounter
 import requests
 import os
 import traceback
@@ -20,6 +20,7 @@ def simple_summarizer_example_main():
         t_max=1000,      # Trigger compression at 1000 tokens
         t_retained=800,  # Keep 800 tokens after compression
         t_summary=200,   # Reserve 200 tokens for summary
+        tokenizer=TokenCounter("gpt-4o", use_transformers=False)
     )
     
     print("=== Starting Conversation ===\n")
