@@ -63,5 +63,18 @@ print(f"Compressions: {stats['compression_count']}")
 print(f"Tokens saved: {stats['total_tokens_saved']}")
 ```
 
+## Core Functionality
+
+### `ContextCompressor`
+
+**Parameters:**
+
+- `summarizer`: Custom text summarization function that takes message text and optional previous summary, returns a new summary
+- `t_max`: Maximum token threshold. Context compression is triggered when this limit is exceeded
+- `t_retained`: Expected token count to retain after compression. The ratio `t_retained/t_max` determines the compression rate
+- `t_summary`: Length of the context summary. This parameter takes effect through prompt engineering in your summarizer (if using LLM) and the `_compress` method
+
+
+
 ## Citation
 Based on the approach described in: Factory.ai: [Compressing Context](https://factory.ai/news/compressing-context)
