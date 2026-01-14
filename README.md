@@ -15,15 +15,13 @@ Features:
 ## Installation
 
 ```bash
+# Install from PyPI
+pip install context-compressor-llm
+
+# Install from source
 git clone https://github.com/LaguePesikin/context-compressor
 cd context-compressor
 pip install -e .
-# for developers run: pip install -e ".[dev]"
-```
-or 
-```
-pip install context-compressor
-```
 
 
 ## Quick Start
