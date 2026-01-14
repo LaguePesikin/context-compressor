@@ -11,6 +11,9 @@ Features:
 - Anchor Points: Each summary is linked to a specific message turn
 - Efficient Compression: Dramatically reduces computation and cost
 
+## Diagram
+
+![](images/diagram.png)
 
 ## Installation
 
