@@ -22,7 +22,7 @@ pip install context-compressor-llm
 git clone https://github.com/LaguePesikin/context-compressor
 cd context-compressor
 pip install -e .
-
+```
 
 ## Quick Start
 
