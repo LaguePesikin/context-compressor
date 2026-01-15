@@ -30,30 +30,45 @@ pip install -e .
 ## Quick Start
 
 ```python
-from context_compressor import ContextCompressor
+from context_compressor import ContextCompressor, TokenCounter
 
 # Define your summarizer function
-def my_summarizer(messages_text, previous_summary=None):
-    # Use your LLM of choice (OpenAI, Anthropic, etc.)
-    if previous_summary:
-        prompt = f"Update this summary with new info:\n{previous_summary}\n\nNew: {messages_text}"
-    else:
-        prompt = f"Summarize: {messages_text}"
+def simple_summarizer(messages_list, previous_summary=None):
+    """
+    Args:
+        messages_list: List of dicts like [{"role": "user", "content": "..."}]
+        previous_summary: Optional previous summary to build upon
+    Returns:
+        A summary string
+    """
+    summary_parts = []
     
-    # Call your LLM here
-    return your_llm_call(prompt)
+    if previous_summary:
+        summary_parts.append(f"[Previous: {previous_summary}]")
+    for msg in messages_list:
+        role = msg["role"]
+        content = msg["content"]
+        # Take first 50 chars of each message
+        snippet = content[:50].replace("\n", " ")
+        summary_parts.append(f"{role.upper()}: {snippet}...")
+    return "\n".join(summary_parts)
 
 # Initialize compressor
 compressor = ContextCompressor(
-    summarizer=my_summarizer,
+    summarizer=simple_summarizer,
     t_max=8000,      # Max tokens before compression
     t_retained=6000, # Tokens to keep after compression
     t_summary=500,   # Reserved tokens for summary
+    tokenizer=TokenCounter(
+        model_name="gpt-4o",
+        use_transformers=False   # Will use default tiktoken encoding
+    )
 )
 
 # Add messages to your conversation
-compressor.add_message("Hello, how are you?", role="user")
-compressor.add_message("I'm doing well, thanks!", role="assistant")
+for _ in range(30):
+    compressor.add_message("Hello, how are you?", role="user")
+    compressor.add_message("I'm doing well, thanks!", role="assistant")
 
 # Get compressed context (auto-compresses if needed)
 context = compressor.get_current_context()
@@ -62,6 +77,14 @@ context = compressor.get_current_context()
 stats = compressor.get_stats()
 print(f"Compressions: {stats['compression_count']}")
 print(f"Tokens saved: {stats['total_tokens_saved']}")
+```
+
+### Expected Output
+
+```plaintext
+Warning: Summary is too long (2813 tokens).
+Compressions: 1
+Tokens saved: 291
 ```
 
 ## Core Functionality

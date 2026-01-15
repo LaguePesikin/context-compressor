@@ -13,7 +13,7 @@ class ContextCompressor:
     
     def __init__(
         self,
-        summarizer: Callable[[str, Optional[str]], str],
+        summarizer: Callable[[List[dict], Optional[str]], str],
         t_max: int = 8000,
         t_retained: int = 6000,
         t_summary: int = 500,
@@ -23,8 +23,9 @@ class ContextCompressor:
         Initialize the context compressor.
         
         Args:
-            summarizer: Function that takes (messages_text, optional_previous_summary) 
-                       and returns a summary string
+            summarizer: Function that takes (messages_list, optional_previous_summary) 
+                       and returns a summary string.
+                       messages_list format: [{"role": "user", "content": "..."}]
             t_max: Maximum token threshold before compression
             t_retained: Target tokens to retain after compression
             t_summary: Expected token count for summaries
@@ -166,13 +167,17 @@ class ContextCompressor:
         Returns:
             Summary text
         """
-        messages_text = self._format_messages_for_summary(new_messages)
+        # Convert Message objects to standard message format
+        messages_list = [
+            {"role": msg.role, "content": msg.content}
+            for msg in new_messages
+        ]
         
         previous_summary = None
         if self.state.current_summary:
             previous_summary = self.state.current_summary.summary
         
-        summary = self.summarizer(messages_text, previous_summary)
+        summary = self.summarizer(messages_list, previous_summary)
         
         summary_tokens = self.tokenizer.count_tokens(summary)
 
@@ -180,13 +185,6 @@ class ContextCompressor:
             print(f"Warning: Summary is too long ({summary_tokens} tokens).")
 
         return summary
-    
-    def _format_messages_for_summary(self, messages: List[Message]) -> str:
-        """Format messages into a readable text for summarization."""
-        lines = []
-        for msg in messages:
-            lines.append(f"{msg.role.upper()}: {msg.content}")
-        return "\n".join(lines)
     
     def get_stats(self) -> dict:
         """Get compression statistics."""
