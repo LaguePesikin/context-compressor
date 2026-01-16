@@ -78,11 +78,3 @@ class SimpleTokenCounter:
     def count_message_tokens(self, messages: List[dict]) -> int:
         """Count tokens in messages."""
         return sum(self.count_tokens(m.get('content', '')) for m in messages)
-
-
-
-if __name__ == "__main__":
-    token_counter = TokenCounter("deepseek-ai/DeepSeek-V3.1", use_transformers=True)
-    text = "Beijing is a beautiful city, with a long history and rich culture."
-    print(token_counter.count_tokens(text))
-    print(tiktoken.encoding_for_model("deepseek-ai/DeepSeek-V3.1").encode(text))
