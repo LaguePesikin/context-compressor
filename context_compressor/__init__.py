@@ -1,21 +1,36 @@
 """
-Context Compressor - Incremental context compression for LLMs.
-
-Based on Factory.ai's approach to managing finite context windows
-with persistent anchored summaries.
+context-compressor: Efficient context window management for LLMs.
 """
 
-__version__ = "0.1.0"
+from .compressor import ContextCompressor, Message
+from .tokenizer import TokenCounter
+from .summarizers import (
+    TruncateSummarizer,
+    HeadTailSummarizer,
+    LLMSummarizer,
+    create_truncate_summarizer,
+    create_head_tail_summarizer,
+    create_llm_summarizer,
+    default_truncate,
+    default_head_tail,
+)
 
-from .compressor import ContextCompressor
-from .types import Message, AnchoredSummary, CompressionState
-from .tokenizer import TokenCounter, SimpleTokenCounter
+__version__ = "0.1.1"
 
 __all__ = [
+    # Core classes
     "ContextCompressor",
     "Message",
-    "AnchoredSummary",
-    "CompressionState",
     "TokenCounter",
-    "SimpleTokenCounter",
+    # Summarizers
+    "TruncateSummarizer",
+    "HeadTailSummarizer",
+    "LLMSummarizer",
+    # Factory functions
+    "create_truncate_summarizer",
+    "create_head_tail_summarizer",
+    "create_llm_summarizer",
+    # Default instances
+    "default_truncate",
+    "default_head_tail",
 ]
