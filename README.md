@@ -87,6 +87,62 @@ Compressions: 1
 Tokens saved: 291
 ```
 
+## Built-In Summarizers
+
+The library provides three common summarization strategies out of the box:
+
+### 1. Truncate Summarizer
+
+Keeps the first N characters of each message with ellipsis:
+
+```python
+from context_compressor import ContextCompressor, TruncateSummarizer
+
+summarizer = TruncateSummarizer(
+    max_chars=50,           # Characters to keep per message
+    ellipsis="...",         # Suffix for truncated messages
+    include_previous=True   # Include previous summaries
+)
+
+compressor = ContextCompressor(summarizer=summarizer)
+```
+
+### 2. Head-Tail Summarizer
+
+Keeps first N and last M messages, omitting the middle:
+
+```python 
+from context_compressor import HeadTailSummarizer
+
+summarizer = HeadTailSummarizer(
+    head_count=3,    # Keep first 3 messages
+    tail_count=2,    # Keep last 2 messages
+    middle_placeholder="[... {count} messages omitted ...]"
+)
+
+compressor = ContextCompressor(summarizer=summarizer)
+```
+
+### 3. LLM Summarizer
+
+Uses an LLM API for intelligent summarization:
+
+```python
+from openai import OpenAI
+from context_compressor import LLMSummarizer
+
+client = OpenAI()
+summarizer = LLMSummarizer(
+    client=client,
+    model="gpt-4o-mini",
+    max_tokens=200,
+    api_type="openai"
+)
+
+compressor = ContextCompressor(summarizer=summarizer)
+```
+
+
 ## Core Functionality
 
 ### `ContextCompressor`
